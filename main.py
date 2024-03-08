@@ -35,7 +35,7 @@ def write_polygon(polygon: Polygon, out_file):
 			writer.writerow(point)
 
 def write_shape(shape, name):
-	with open(name + ".csv", "w") as out_file:
+	with open(f"{name}.csv", "w") as out_file:
 		if shape.is_empty:
 			out_file.write("EMPTY POLYGON\n")
 			return
@@ -44,14 +44,14 @@ def write_shape(shape, name):
 			write_polygon(shape, out_file)
 		elif isinstance(shape, MultiPolygon):
 			out_file.write("MULTIPOLYGON\n")
-			out_file.write("count of subpolygons: " + str(len(shape.geoms)) + "\n")
+			out_file.write(f"count of subpolygons: {len(shape.geoms)}\n")
 			for polygon in list(shape.geoms):
 				write_polygon(polygon, out_file)
 				out_file.write('\n')
 		else: raise TypeError('got not Polygon or MultiPolygon')
 
 		gpd.GeoSeries([shape]).plot()
-		plt.savefig(name + ".png")
+		plt.savefig(f"{name}.png")
 
 
 PROPER_ARG_COUNT = 3
