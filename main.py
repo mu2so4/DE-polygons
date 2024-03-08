@@ -3,6 +3,7 @@ import os
 import glob
 import matplotlib.pyplot as plt
 from shapely.geometry import Polygon
+from shapely.geometry import MultiPolygon
 import geopandas as gpd
 import csv
 
@@ -16,27 +17,38 @@ def read_polygon(filename):
 	return Polygon(coords)
 
 
+def write_polygon(polygon: Polygon, out_file):
+	holes = list(polygon.interiors)
+	if len(holes) == 0:
+		out_file.write("POLYGON\n")
+	else:
+		out_file.write("POLYGON WITH HOLES\n")
+
+	writer = csv.writer(out_file, delimiter='\t')
+	bound_coords = list(polygon.exterior.coords)
+	for point in bound_coords:
+		writer.writerow(point)
+
+	for hole in holes:
+		out_file.write("\nhole\n")
+		for point in list(hole.coords):
+			writer.writerow(point)
+
 def write_shape(shape, name):
 	with open(name + ".csv", "w") as out_file:
 		if shape.is_empty:
 			out_file.write("EMPTY POLYGON\n")
 			return
 
-		holes = list(shape.interiors)
-		if len(holes) == 0:
-			out_file.write("POLYGON\n")
-		else:
-			out_file.write("POLYGON WITH HOLES\n")
-
-		writer = csv.writer(out_file, delimiter='\t')
-		bound_coords = list(shape.exterior.coords)
-		for point in bound_coords:
-			writer.writerow(point)
-
-		for hole in holes:
-			out_file.write("\nhole\n")
-			for point in list(hole.coords):
-				writer.writerow(point)
+		if isinstance(shape, Polygon):
+			write_polygon(shape, out_file)
+		elif isinstance(shape, MultiPolygon):
+			out_file.write("MULTIPOLYGON\n")
+			out_file.write("count of subpolygons: " + str(len(shape.geoms)) + "\n")
+			for polygon in list(shape.geoms):
+				write_polygon(polygon, out_file)
+				out_file.write('\n')
+		else: raise TypeError('got not Polygon or MultiPolygon')
 
 		gpd.GeoSeries([shape]).plot()
 		plt.savefig(name + ".png")
