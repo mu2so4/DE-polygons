@@ -19,14 +19,28 @@ def read_polygon(filename):
 def write_shape(shape, name):
 	with open(name + ".csv", "w") as out_file:
 		if shape.is_empty:
-			out_file.write("EMPTY POLYGON")
+			out_file.write("EMPTY POLYGON\n")
 			return
+
+		holes = list(shape.interiors)
+		if len(holes) == 0:
+			out_file.write("POLYGON\n")
+		else:
+			out_file.write("POLYGON WITH HOLES\n")
+
 		writer = csv.writer(out_file, delimiter='\t')
-		coords = list(mergedPolys.exterior.coords)
-		for point in coords:
+		bound_coords = list(shape.exterior.coords)
+		for point in bound_coords:
 			writer.writerow(point)
+
+		for hole in holes:
+			out_file.write("\nhole\n")
+			for point in list(hole.coords):
+				writer.writerow(point)
+
 		gpd.GeoSeries([shape]).plot()
 		plt.savefig(name + ".png")
+
 
 for f in glob.glob("*.png"):
 	os.remove(f)
