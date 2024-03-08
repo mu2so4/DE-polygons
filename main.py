@@ -1,20 +1,26 @@
+import sys
 import matplotlib.pyplot as plt
 
-input_file_name = "tests/1.txt"
-input_file = open(input_file_name, "r")
+def read_polynom(filename):
+	with open(filename) as inp_file:
+		data = inp_file.readlines()
+		coords = []
+		for line in data:
+			str_numbers = line.split()
+			coords.append([float(s) for s in str_numbers])
+	coords.append(coords[0])
+	return coords
 
-with open(input_file_name) as file_inp:
-	data = file_inp.readlines()
-	coords = []
-	for line in data:
-		string_numbers = line.split()
-		coords.append([float(s) for s in string_numbers])
+filename1 = sys.argv[1]
+polynom1 = read_polynom(filename1)
+xs1, ys1 = zip(*polynom1)
+#plt.figure()
+plt.plot(xs1, ys1)
 
-input_file.close()
+filename2 = sys.argv[2]
+polynom2 = read_polynom(filename2)
+xs2, ys2 = zip(*polynom2)
+#plt.figure()
+plt.plot(xs2, ys2)
 
-coords.append(coords[0])
-xs, ys = zip(*coords)
-
-plt.figure()
-plt.plot(xs,ys)
 plt.show()
