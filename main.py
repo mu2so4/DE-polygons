@@ -54,6 +54,11 @@ def write_shape(shape, name):
 		plt.savefig(name + ".png")
 
 
+PROPER_ARG_COUNT = 3
+if len(sys.argv) != PROPER_ARG_COUNT:
+	print(f"usage: python3 {sys.argv[0]} <polygon1_coords_filename> <polygon2_coords_filename>")
+	sys.exit(1)
+
 for f in glob.glob("*.png"):
 	os.remove(f)
 
