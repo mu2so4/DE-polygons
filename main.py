@@ -1,4 +1,6 @@
 import sys
+import os
+import glob
 import matplotlib.pyplot as plt
 from shapely.geometry import Polygon
 import geopandas as gpd
@@ -25,7 +27,9 @@ def write_shape(shape, name):
 			writer.writerow(point)
 		gpd.GeoSeries([shape]).plot()
 		plt.savefig(name + ".png")
-		
+
+for f in glob.glob("*.png"):
+	os.remove(f)
 
 filename1 = sys.argv[1]
 polygon1 = read_polygon(filename1)
