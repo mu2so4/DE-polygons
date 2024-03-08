@@ -1,11 +1,12 @@
 import sys
 import os
 import glob
+import csv
 import matplotlib.pyplot as plt
+import geopandas as gpd
+
 from shapely.geometry import Polygon
 from shapely.geometry import MultiPolygon
-import geopandas as gpd
-import csv
 
 def read_polygon(filename):
 	with open(filename) as inp_file:
@@ -48,7 +49,8 @@ def write_shape(shape, name):
 			for polygon in list(shape.geoms):
 				write_polygon(polygon, out_file)
 				out_file.write('\n')
-		else: raise TypeError('got not Polygon or MultiPolygon')
+		else:
+			raise TypeError('got not Polygon or MultiPolygon')
 
 		gpd.GeoSeries([shape]).plot()
 		plt.savefig(f"{name}.png")
