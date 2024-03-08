@@ -1,7 +1,6 @@
 import sys
 import matplotlib.pyplot as plt
 from shapely.geometry import Polygon
-from shapely.ops import unary_union
 import geopandas as gpd
 
 def read_polygon(filename):
@@ -11,26 +10,30 @@ def read_polygon(filename):
 		for line in data:
 			str_numbers = line.split()
 			coords.append([float(s) for s in str_numbers])
-	'''
-	coords.append(coords[0])
-	return coords
-	'''
 	return Polygon(coords)
 
 filename1 = sys.argv[1]
 polygon1 = read_polygon(filename1)
-#xs1, ys1 = zip(*polygon1)
-#plt.figure()
-#plt.plot(xs1, ys1)
 
 filename2 = sys.argv[2]
 polygon2 = read_polygon(filename2)
-#xs2, ys2 = zip(*polygon2)
-#plt.figure()
-#plt.plot(xs2, ys2)
-polys = [polygon1, polygon2]
 
-mergedPolys = unary_union(polys)
-gpd.GeoSeries([mergedPolys]).boundary.plot()
-plt.show()
+mergedPolys = polygon1.union(polygon2)
+gpd.GeoSeries([mergedPolys]).plot()
+plt.savefig("union.png")
+print(mergedPolys)
 
+intersectedPolys = polygon1.intersection(polygon2)
+gpd.GeoSeries([intersectedPolys]).plot()
+plt.savefig("intersection.png")
+print(intersectedPolys)
+
+diff_1_2 = polygon1.difference(polygon2)
+gpd.GeoSeries([diff_1_2]).plot()
+plt.savefig("difference_1_2.png")
+print(diff_1_2)
+
+diff_2_1 = polygon2.difference(polygon1)
+gpd.GeoSeries([diff_2_1]).plot()
+plt.savefig("difference_2_1.png")
+print(diff_2_1)
